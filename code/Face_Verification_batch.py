@@ -100,7 +100,7 @@ def main(args):
                 elif np.logical_and(predict_issame[index], np.logical_not(actual_issame[index])): # predict same , actual diff
                     with open(os.path.join(args.log_dir,'error_diff.txt'),'at') as f:
                         f.write('index %d pairs:%s\n' % (index,pairs[index]))
-            print('Error Validated pairs have been logged')
+            print('Error Validated pairs have been logged.')
             duration = time.time() - start_time
             print('Validate Time %.3f' % duration)  
             print('Pairs(total,same,diff): %d %d %d' % (num_pairs,n_same,n_diff))
