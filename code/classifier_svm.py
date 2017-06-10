@@ -11,6 +11,7 @@ import argparse
 import facenet
 import os
 import sys
+import time
 import math
 import pickle
 from sklearn.svm import SVC
@@ -38,6 +39,7 @@ def main(args):
             phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
             embedding_size = embeddings.get_shape()[1]
             
+            start_time = time.time()
             # Run forward pass to calculate embeddings
             print('Calculating features for images')
             nrof_images = len(paths)
@@ -50,9 +52,13 @@ def main(args):
                 images = facenet.load_data(paths_batch, False, False, args.image_size)
                 feed_dict = { images_placeholder:images, phase_train_placeholder:False }
                 emb_array[start_index:end_index,:] = sess.run(embeddings, feed_dict=feed_dict)
-            
+
+            duration = time.time() - start_time
+            print('Calculating features Time %.3f' % duration)  
+
             classifier_filename_exp = os.path.expanduser(args.classifier_filename)
 
+            start_time = time.time()
                 
             # Classify images
             print('Testing classifier')
@@ -64,6 +70,9 @@ def main(args):
             predictions = model.predict_proba(emb_array)
             best_class_indices = np.argmax(predictions, axis=1)
             best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
+
+            duration = time.time() - start_time
+            print('classifier Time %.3f' % duration)      
 
             accuracy = np.mean(np.equal(best_class_indices, labels))
             print('Accuracy: %.3f' % accuracy)
