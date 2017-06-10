@@ -109,7 +109,7 @@ def parse_arguments(argv):
     parser.add_argument('--validate_dir', type=str,
         help='Path to the data directory containing aligned face patches.', default='./datasets/my_dataset/test/')
     parser.add_argument('--validate_batch_size', type=int,
-        help='Number of images to process in a batch in the Validate set.', default=100)
+        help='Number of images to process in a batch in the Validate set.', default=1000)
 
     return parser.parse_args(argv)
 

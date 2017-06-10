@@ -81,7 +81,7 @@ def parse_arguments(argv):
         help='Classifier model file name as a pickle (.pkl) file. ' ,
         default='./models/my_classifier.pkl')
     parser.add_argument('--batch_size', type=int,
-        help='Number of images to process in a batch.', default=100)
+        help='Number of images to process in a batch.', default=1000)
     parser.add_argument('--image_size', type=int,
         help='Image size (height, width) in pixels.', default=160)
     return parser.parse_args(argv)

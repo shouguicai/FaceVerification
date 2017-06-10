@@ -11,6 +11,7 @@ import argparse
 import facenet
 import os
 import sys
+import time
 import math
 import pickle
 from sklearn.svm import SVC
@@ -38,6 +39,7 @@ def main(args):
             phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
             embedding_size = embeddings.get_shape()[1]
             
+            start_time = time.time()
             # Run forward pass to calculate embeddings
             print('Calculating features for images')
             nrof_images = len(paths)
@@ -51,14 +53,21 @@ def main(args):
                 feed_dict = { images_placeholder:images, phase_train_placeholder:False }
                 emb = sess.run(embeddings, feed_dict=feed_dict)
                 emb_array[start_index:end_index,:] = emb
-            
+
+            duration = time.time() - start_time
+            print('Calculating features Time %.3f' % duration)
+
+            start_time = time.time()
             classifier_filename_exp = os.path.expanduser(args.classifier_filename)
 
             # Train classifier
             print('Training classifier')
             model = SVC(kernel='linear', probability=True)
             model.fit(emb_array, labels)
-            
+
+            duration = time.time() - start_time
+            print('Training classifier Time %.3f' % duration)
+
             # Create a list of class names
             class_names = [ cls.name.replace('_', ' ') for cls in dataset]
 
@@ -80,7 +89,7 @@ def parse_arguments(argv):
         help='Classifier model file name as a pickle (.pkl) file. ',
         default='./models/my_classifier.pkl')
     parser.add_argument('--batch_size', type=int,
-        help='Number of images to process in a batch.', default=100)
+        help='Number of images to process in a batch.', default=1000)
     parser.add_argument('--image_size', type=int,
         help='Image size (height, width) in pixels.', default=160)
     
