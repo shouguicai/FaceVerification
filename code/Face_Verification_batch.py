@@ -13,6 +13,7 @@ import lfw
 import os
 import sys
 import math
+import time
 import pickle
 from sklearn.svm import SVC
 
@@ -24,10 +25,8 @@ def main(args):
 
             # Read the file containing the pairs used for testing
             pairs = lfw.read_pairs(os.path.expanduser(args.validate_pairs))
-
             # Get the paths for the corresponding images
             paths, actual_issame = lfw.get_paths(os.path.expanduser(args.validate_dir), pairs, args.validate_file_ext)
-            
             # Load the model
             print('Loading feature extraction model')
             facenet.load_model(args.model)
@@ -38,7 +37,8 @@ def main(args):
             phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
             embedding_size = embeddings.get_shape()[1]
             image_size = args.image_size
-        
+            
+            start_time = time.time()
             # Run forward pass to calculate embeddings
             print('Runnning forward pass on Validate images')
             batch_size = args.validate_batch_size
@@ -54,8 +54,13 @@ def main(args):
                 feed_dict = { images_placeholder:images, phase_train_placeholder:False }
                 emb = sess.run(embeddings, feed_dict=feed_dict)
                 emb_array[start_index:end_index,:] = emb
+            
+            duration = time.time() - start_time
+            print('Calculating features Time %.3f' % duration)
 
             classifier_filename_exp = os.path.expanduser(args.classifier_filename)
+
+            start_time = time.time()
 
             with open(classifier_filename_exp, 'rb') as infile:
                 (model, class_names) = pickle.load(infile)
@@ -87,7 +92,19 @@ def main(args):
             accuracy = float(true_accept+true_reject)/num_pairs
             accuracy_accepct = float(true_accept) / float(n_same)
             accuracy_reject = float(true_reject) / float(n_diff)
-            print('Accuracy(total,accept,reject): %.3f %.3f %.3f' % (accuracy,accuracy_accepct,accuracy_reject))
+            # write log for err validate pairs
+            for index in range(num_pairs):
+                if np.logical_and(np.logical_not(predict_issame[index]), actual_issame[index]):  # predict diff , actual same 
+                    with open(os.path.join(args.log_dir,'error_same.txt'),'at') as f:
+                        f.write('index:%d pairs:%s\n' % (index,pairs[index]))
+                elif np.logical_and(predict_issame[index], np.logical_not(actual_issame[index])): # predict same , actual diff
+                    with open(os.path.join(args.log_dir,'error_diff.txt'),'at') as f:
+                        f.write('index %d pairs:%s\n' % (index,pairs[index]))
+            print('Error Validated pairs have been logged')
+            duration = time.time() - start_time
+            print('Validate Time %.3f' % duration)  
+            print('Pairs(total,same,diff): %d %d %d' % (num_pairs,n_same,n_diff))
+            print('Accuracy(total,same,diff): %.3f %.3f %.3f' % (accuracy,accuracy_accepct,accuracy_reject))
             
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
@@ -98,6 +115,9 @@ def parse_arguments(argv):
     parser.add_argument('--classifier_filename', 
         help='Classifier model file name as a pickle (.pkl) file. ' , type=str, 
         default='./models/my_classifier.pkl')
+    parser.add_argument('--log_dir', 
+        help='dir for log err infor. ' , type=str, 
+        default='./logs')
     parser.add_argument('--image_size', type=int,
         help='Image size (height, width) in pixels.', default=160)
 
