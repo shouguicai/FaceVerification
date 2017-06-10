@@ -19,6 +19,7 @@ def FaceVerification(X1,X2):
       Args:
       x1: picture 1.
       x2: picture 2.
+      size of x1,x2 need to be bigger than [160*160*3]
     Returns:
       whether x1,x2 belong to the same person
       1 - is same 
