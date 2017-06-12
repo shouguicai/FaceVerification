@@ -109,7 +109,7 @@ def main(args):
             # tp: predict same , actual same ; true answer
             # tn: predict diff , actual diff ; true answer
 
-            num_pairs = min(len(actual_issame))
+            num_pairs = len(actual_issame)
             n_same = np.sum(actual_issame)
             n_diff = np.sum(np.logical_not(actual_issame))
             accuracy = float(true_accept+true_reject)/num_pairs
