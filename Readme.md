@@ -37,7 +37,7 @@
     Pairs(total,same,diff): 12000 6000 6000
     Accuracy(total,same,diff): 0.958 0.918 0.997
 
-10k个人的时候，用SVM计算量过大，这边用的是FNN对降为的特征进行分类
+10k个人的时候，用SVM计算量过大，这边用的是FNN对降维的特征进行分类
 
 `python code/train_model.py`
 
