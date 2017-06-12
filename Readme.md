@@ -64,6 +64,16 @@
 
 `python code/Face_Verification_batch.py`
 
+    Loading feature extraction model
+    Runnning forward pass on Validate images
+    Calculating features Time 857.511
+    Loaded classifier model from file ...
+    Error Validated pairs have been logged.
+    Validate Time 3.902
+    Pairs(total,same,diff): 17509 7511 9998
+    Accuracy(total,same,diff): 0.942 0.864 1.000
+
+
 
 
 
