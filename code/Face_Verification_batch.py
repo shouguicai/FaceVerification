@@ -58,35 +58,58 @@ def main(args):
             duration = time.time() - start_time
             print('Calculating features Time %.3f' % duration)
 
-            classifier_filename_exp = os.path.expanduser(args.classifier_filename)
+            mode = 'FNN'
+            if (mode=='SVM'):
+                classifier_filename_exp = os.path.expanduser(args.classifier_filename)
 
-            start_time = time.time()
+                start_time = time.time()
 
-            with open(classifier_filename_exp, 'rb') as infile:
-                (model, class_names) = pickle.load(infile)
+                with open(classifier_filename_exp, 'rb') as infile:
+                    (model, class_names) = pickle.load(infile)
 
-            print('Loaded classifier model from file "%s"' % classifier_filename_exp)
+                print('Loaded classifier model from file "%s"' % classifier_filename_exp)
 
-            embeddings1 = emb_array[0::2]
-            embeddings2 = emb_array[1::2]
+                embeddings1 = emb_array[0::2]
+                embeddings2 = emb_array[1::2]
 
-            #print(embeddings1.shape)
+                #print(embeddings1.shape)
 
-            predictions1 = model.predict_proba(embeddings1)
-            best_class_indices1 = np.argmax(predictions1, axis=1)
-            best_class_probabilities1 = predictions1[np.arange(len(best_class_indices1)), best_class_indices1]
+                predictions1 = model.predict_proba(embeddings1)
+                best_class_indices1 = np.argmax(predictions1, axis=1)
+                best_class_probabilities1 = predictions1[np.arange(len(best_class_indices1)), best_class_indices1]
 
-            predictions2 = model.predict_proba(embeddings2)
-            best_class_indices2 = np.argmax(predictions2, axis=1)
-            best_class_probabilities2 = predictions2[np.arange(len(best_class_indices2)), best_class_indices2]
+                predictions2 = model.predict_proba(embeddings2)
+                best_class_indices2 = np.argmax(predictions2, axis=1)
+                best_class_probabilities2 = predictions2[np.arange(len(best_class_indices2)), best_class_indices2]
 
-            predict_issame = np.equal(best_class_indices1, best_class_indices2)
+                predict_issame = np.equal(best_class_indices1, best_class_indices2)
+
+            elif (mode=='FNN'):
+
+                start_time = time.time()
+                print('Loaded classifier model from file ...')
+                #load meta graph and restore weights
+                saver = tf.train.import_meta_graph('./models/sparse_models/20170612-204222/my-model-fc-sc0-3400.meta')
+                saver.restore(sess,tf.train.latest_checkpoint('./models/sparse_models/20170612-204222/'))
+ 
+                # Get input and output tensors
+                graph = tf.get_default_graph()
+                x = graph.get_tensor_by_name("input/x-input:0")
+                keep_prob = graph.get_tensor_by_name("dropout/keep_prob:0")
+                y_hat = graph.get_tensor_by_name("output/activation:0")
+                feed_dict = { x:emb_array,keep_prob:1.0 }
+                predictions = tf.argmax(y_hat, 1)
+                best_class_indices = sess.run(predictions, feed_dict=feed_dict)
+                best_class_indices1 = best_class_indices[0::2]
+                best_class_indices2 = best_class_indices[1::2]
+                predict_issame = np.equal(best_class_indices1, best_class_indices2)
+
             true_accept = np.sum(np.logical_and(predict_issame, actual_issame))       
             true_reject = np.sum(np.logical_and(np.logical_not(predict_issame), np.logical_not(actual_issame)))
             # tp: predict same , actual same ; true answer
             # tn: predict diff , actual diff ; true answer
 
-            num_pairs = min(len(actual_issame), embeddings1.shape[0])
+            num_pairs = min(len(actual_issame))
             n_same = np.sum(actual_issame)
             n_diff = np.sum(np.logical_not(actual_issame))
             accuracy = float(true_accept+true_reject)/num_pairs
