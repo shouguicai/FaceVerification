@@ -89,8 +89,8 @@ def main(args):
                 start_time = time.time()
                 print('Loaded classifier model from file ...')
                 #load meta graph and restore weights
-                saver = tf.train.import_meta_graph('./models/sparse_models/20170612-204222/my-model-fc-sc0-3400.meta')
-                saver.restore(sess,tf.train.latest_checkpoint('./models/sparse_models/20170612-204222/'))
+                saver = tf.train.import_meta_graph('./models/sparse_models/20170612-205037/my-model-fc-sc0-3500.meta')
+                saver.restore(sess,tf.train.latest_checkpoint('./models/sparse_models/20170612-205037/'))
  
                 # Get input and output tensors
                 graph = tf.get_default_graph()
@@ -146,11 +146,11 @@ def parse_arguments(argv):
 
     # Parameters for validation 
     parser.add_argument('--validate_pairs', type=str,
-        help='The file containing the pairs to use for validation.', default='./datasets/my_dataset/labels.txt')
+        help='The file containing the pairs to use for validation.', default='./datasets/10k_dataset/labels.txt')
     parser.add_argument('--validate_file_ext', type=str,
         help='The file extension for the Validate dataset.', default='jpg', choices=['jpg', 'png'])
     parser.add_argument('--validate_dir', type=str,
-        help='Path to the data directory containing aligned face patches.', default='./datasets/my_dataset/test/')
+        help='Path to the data directory containing aligned face patches.', default='./datasets/10k_dataset/test/')
     parser.add_argument('--validate_batch_size', type=int,
         help='Number of images to process in a batch in the Validate set.', default=1000)
 
