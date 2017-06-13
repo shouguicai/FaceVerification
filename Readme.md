@@ -21,7 +21,7 @@ code/
 └── train_model.py
 </pre>
 
-matlab文件夹里面的文件正如名字，用来Resize图片，划分训练集测试集以及写pairs文件,人脸对齐请参考[这里](https://github.com/kpzhang93/MTCNN_face_detection_alignment)。
+matlab文件夹里面的函数正如名字，用来Resize图片，划分训练集测试集以及写pairs文件,人脸对齐请参考[这里](https://github.com/kpzhang93/MTCNN_face_detection_alignment)。
 
 ## 实验效果
 先试了下100人的情况，分类器用的SVM，1w多张图的训练时间还是很快的。
