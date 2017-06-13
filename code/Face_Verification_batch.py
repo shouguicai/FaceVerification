@@ -58,9 +58,8 @@ def main(args):
             duration = time.time() - start_time
             print('Calculating features Time %.3f' % duration)
 
-            mode = 'FNN'
-            if (mode=='SVM'):
-                classifier_filename_exp = os.path.expanduser(args.classifier_filename)
+            if (args.mode=='SVM'):
+                classifier_filename_exp = os.path.expanduser(args.classifier_filename_svm)
 
                 start_time = time.time()
 
@@ -84,13 +83,13 @@ def main(args):
 
                 predict_issame = np.equal(best_class_indices1, best_class_indices2)
 
-            elif (mode=='FNN'):
+            elif (args.mode=='FNN'):
 
                 start_time = time.time()
                 print('Loaded classifier model from file ...')
                 #load meta graph and restore weights
-                saver = tf.train.import_meta_graph('./models/sparse_models/20170612-205037/my-model-fc-sc0-3500.meta')
-                saver.restore(sess,tf.train.latest_checkpoint('./models/sparse_models/20170612-205037/'))
+                saver = tf.train.import_meta_graph(classifier_filename_fnn)
+                saver.restore(sess,tf.train.latest_checkpoint(checkpoint_filename_fnn))
  
                 # Get input and output tensors
                 graph = tf.get_default_graph()
@@ -135,9 +134,18 @@ def parse_arguments(argv):
     parser.add_argument('--model', type=str, 
         help='Could be either a directory containing the meta_file and ckpt_file or a model protobuf (.pb) file', 
         default='./models/20170512-110547.pb')
-    parser.add_argument('--classifier_filename', 
+    parser.add_argument('--mode', type=str, 
+        help='choise classifier to use.', 
+        default='FNN')
+    parser.add_argument('--classifier_filename_svm', 
         help='Classifier model file name as a pickle (.pkl) file. ' , type=str, 
         default='./models/my_classifier.pkl')
+    parser.add_argument('--classifier_filename_fnn', 
+        help='Classifier model file ,meta,... ' , type=str, 
+        default='./models/sparse_models/20170612-205037/my-model-fc-sc0-3500.meta')
+    parser.add_argument('--checkpoint_filename_fnn', 
+        help='Classifier model file ,meta,... ' , type=str, 
+        default='./models/sparse_models/20170612-205037/')
     parser.add_argument('--log_dir', 
         help='dir for log err infor. ' , type=str, 
         default='./logs')
