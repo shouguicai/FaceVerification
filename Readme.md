@@ -91,12 +91,13 @@ matlab文件夹里面的函数正如名字，用来Resize图片，划分训练�
 
     Loading feature extraction model
     Runnning forward pass on Validate images
-    Calculating features Time 857.511
+    Calculating features Time 961.042
     Loaded classifier model from file ...
     Error Validated pairs have been logged.
-    Validate Time 3.902
-    Pairs(total,same,diff): 17509 7511 9998
-    Accuracy(total,same,diff): 0.942 0.864 1.000
+    Validate Time 3.993
+    Pairs(total,same,diff): 20000 10000 10000
+    Accuracy(total,same,diff): 0.923 0.847 1.000
+
 
 
 
