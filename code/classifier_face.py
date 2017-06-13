@@ -63,11 +63,9 @@ def main(args):
             print('Embeddings data saved')
             '''
             
-            mode = 'FNN'
+            if (args.mode=='SVM'):
 
-            if (mode=='SVM'):
-
-                classifier_filename_exp = os.path.expanduser(args.classifier_filename)
+                classifier_filename_exp = os.path.expanduser(args.classifier_filename_svm)
 
                 start_time = time.time()
                     
@@ -88,12 +86,12 @@ def main(args):
                 accuracy = np.mean(np.equal(best_class_indices, labels))
                 print('Accuracy: %.3f' % accuracy)
 
-            elif (mode=='FNN'):
+            elif (args.mode=='FNN'):
 
                 start_time = time.time()
                 #load meta graph and restore weights
-                saver = tf.train.import_meta_graph('./models/sparse_models/20170612-204222/my-model-fc-sc0-3400.meta')
-                saver.restore(sess,tf.train.latest_checkpoint('./models/sparse_models/20170612-204222/'))
+                saver = tf.train.import_meta_graph(classifier_filename_fnn)
+                saver.restore(sess,tf.train.latest_checkpoint(checkpoint_filename_fnn))
  
                 # Get input and output tensors
                 graph = tf.get_default_graph()
@@ -116,16 +114,25 @@ def parse_arguments(argv):
     
     parser.add_argument('--data_dir', type=str,
         help='Path to the data directory containing test data.',
-        default='./datasets/my_dataset/test/')
+        default='./datasets/10k_dataset/test/')
     parser.add_argument('--save_path', type=str,
         help='Path to the data directory containing aligned face patches.',
         default='./datasets/save_mat/emb_mat_10k_test.mat')
     parser.add_argument('--model', type=str, 
         help='Could be either a directory containing the meta_file and ckpt_file or a model protobuf (.pb) file',
         default='./models/20170512-110547.pb')
-    parser.add_argument('--classifier_filename',  type=str,
-        help='Classifier model file name as a pickle (.pkl) file. ' ,
+    parser.add_argument('--mode', type=str, 
+        help='choise classifier to use.', 
+        default='FNN')
+    parser.add_argument('--classifier_filename_svm', 
+        help='Classifier model file name as a pickle (.pkl) file. ' , type=str, 
         default='./models/my_classifier.pkl')
+    parser.add_argument('--classifier_filename_fnn', 
+        help='Classifier model file ,meta,... ' , type=str, 
+        default='./models/sparse_models/20170612-205037/my-model-fc-sc0-3500.meta')
+    parser.add_argument('--checkpoint_filename_fnn', 
+        help='Classifier model file ,meta,... ' , type=str, 
+        default='./models/sparse_models/20170612-205037/')
     parser.add_argument('--batch_size', type=int,
         help='Number of images to process in a batch.', default=1000)
     parser.add_argument('--image_size', type=int,
