@@ -1,5 +1,5 @@
 # Face Verification(Updating)
-特征提取使用的是[Inception-ResNet](http://arxiv.org/abs/1602.07261.)模型，因为计算资源有限,直接用了[David Sandberg](https://github.com/davidsandberg)在MS-Celeb-1M数据集上的训练[结果](https://drive.google.com/file/d/0B5MzpY9kBtDVZ2RpVDYwWmxoSUk/edit)，在这里作为分类器之前的特征提取部分，训练和测试的图片来自CASIA WebFace Database。
+特征提取使用的是[Inception-ResNet](https://arxiv.org/abs/1602.07261)模型，因为计算资源有限,直接用了[David Sandberg](https://github.com/davidsandberg)在MS-Celeb-1M数据集上的训练[结果](https://drive.google.com/file/d/0B5MzpY9kBtDVZ2RpVDYwWmxoSUk/edit)，在这里作为分类器之前的特征提取部分，训练和测试的图片来自CASIA WebFace Database。
 
 ## 代码结构
 <pre>
